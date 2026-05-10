@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Poppins, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Providers } from '@/app/providers'
 import './globals.css'
 
 const poppins = Poppins({ 
@@ -44,13 +45,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-[#071B2A]">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${poppins.variable} ${inter.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <Providers>
+          {children}
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </Providers>
       </body>
     </html>
   )

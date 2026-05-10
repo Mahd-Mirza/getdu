@@ -1,265 +1,75 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
-import { Check, Wifi, Tv, Building2, Zap, Star } from "lucide-react"
+import { Building2, Check, Tv, Wifi, Zap, Star } from "lucide-react"
+import type { PlanType } from "@/lib/cms/types"
+import { getProductIcon } from "@/lib/cms/icons"
+import { useCMSStore, whatsappHref } from "@/stores/cms-store"
 
-type PlanType = "internet" | "bundle" | "business"
+export type NavigateToPlanDetail = { id: string; planType: PlanType }
+export const NAVIGATE_TO_PLAN_EVENT = "navigate-to-plan"
 
-type Plan = {
-  name: string
-  icon: typeof Wifi
-  type: PlanType
-  price: number
-  /** Monthly reference price before promo; omit strikethrough when null */
-  originalPrice: number | null
-  speed: string
-  features: string[]
-  popular: boolean
-  color: string
-  /** Shown next to the price (e.g. "/month + 5% VAT") */
-  pricePeriod?: string
-}
-
-const plans: Plan[] = [
-  // Internet + TV + Landline (home ultra bundles)
-  {
-    name: "Home Starter Ultra",
-    icon: Tv,
-    type: "bundle",
-    price: 272,
-    originalPrice: 389,
-    speed: "250 Mbps download · 24-month offer",
-    features: [
-      "30% discount — 24-months offer",
-      "24 months contract (+ fees & charges, T&C apply)",
-      "Advanced WiFi router",
-      "Free installation & no home deposit",
-      "Light English Pack: 1 pack of your choice",
-      "1 HDTV receiver",
-    ],
-    popular: false,
-    color: "#14b8a6",
-    pricePeriod: "/month + 5% VAT",
-  },
-  {
-    name: "Home Basic Ultra",
-    icon: Tv,
-    type: "bundle",
-    price: 322,
-    originalPrice: 429,
-    speed: "1 Gbps download · 24-month offer",
-    features: [
-      "25% discount for 24 months",
-      "24 months contract (+ 5% VAT + fees & charges, T&C apply)",
-      "Advanced WiFi router",
-      "Free installation & no home deposit",
-      "2 streaming services + 1 TV package",
-      "1 recordable HDTV receiver · Disney+ included",
-    ],
-    popular: true,
-    color: "#00C2FF",
-    pricePeriod: "/month + 5% VAT",
-  },
-  {
-    name: "Home Advanced Ultra",
-    icon: Tv,
-    type: "bundle",
-    price: 434,
-    originalPrice: 579,
-    speed: "1 Gbps download · 24-month offer",
-    features: [
-      "25% discount for 24 months",
-      "24 months contract (+ 5% VAT + fees & charges, T&C apply)",
-      "2 premium WiFi routers",
-      "Free installation & no home deposit",
-      "3 streaming services + 2 TV packages",
-      "1 recordable HDTV receiver · Disney+ included",
-    ],
-    popular: false,
-    color: "#7c3aed",
-    pricePeriod: "/month + 5% VAT",
-  },
-  {
-    name: "Home Ultimate Ultra",
-    icon: Tv,
-    type: "bundle",
-    price: 562,
-    originalPrice: 749,
-    speed: "1 Gbps download · 24-month offer",
-    features: [
-      "25% discount for 24 months",
-      "24 months contract (+ 5% VAT + fees & charges, T&C apply)",
-      "2 ultimate WiFi routers",
-      "Free installation & no home deposit",
-      "4 streaming services + 3 TV packages",
-      "2 recordable HDTV receivers · Disney+ included",
-    ],
-    popular: false,
-    color: "#00C2FF",
-    pricePeriod: "/month + 5% VAT",
-  },
-  // Internet only — Home Wireless 5G
-  {
-    name: "Home Wireless 5G (Plan A)",
-    icon: Wifi,
-    type: "internet",
-    price: 229,
-    originalPrice: 299,
-    speed: "Unlimited data · limited-time offer",
-    features: [
-      "20% discount for 12 months (was AED 299 + VAT)",
-      "5G enabled router",
-      "Unlimited data",
-      "12 months contract",
-    ],
-    popular: false,
-    color: "#14b8a6",
-    pricePeriod: "/month + 5% VAT",
-  },
-  {
-    name: "Home Wireless 5G (Plan B)",
-    icon: Wifi,
-    type: "internet",
-    price: 299,
-    originalPrice: 399,
-    speed: "Unlimited data · limited-time offer",
-    features: [
-      "20% discount for 6 months (was AED 399 + VAT)",
-      "Free router with latest WiFi 6 technology",
-      "Unlimited data",
-      "12 months contract",
-      "Includes Amazon Prime, OSN+, Disney+, Botim (where applicable)",
-    ],
-    popular: true,
-    color: "#00C2FF",
-    pricePeriod: "/month + 5% VAT",
-  },
-  // Corporate — main + wireless
-  {
-    name: "Business Essential 100",
-    icon: Building2,
-    type: "business",
-    price: 810,
-    originalPrice: null,
-    speed: "100 Mbps down / 10 Mbps up",
-    features: [
-      "One-time activation AED 200 + 5% VAT",
-      "12 months contract",
-      "Unlimited internet usage",
-      "Dedicated account manager",
-      "Flexible no-contract option at AED 1,200/month",
-    ],
-    popular: false,
-    color: "#00C2FF",
-    pricePeriod: "/month + 5% VAT",
-  },
-  {
-    name: "Business Essential 150",
-    icon: Building2,
-    type: "business",
-    price: 950,
-    originalPrice: null,
-    speed: "150 Mbps down / 15 Mbps up",
-    features: [
-      "One-time activation AED 200 + 5% VAT",
-      "12 months contract",
-      "Unlimited internet usage",
-      "Dedicated account manager",
-      "Flexible no-contract option at AED 1,400/month",
-    ],
-    popular: true,
-    color: "#7c3aed",
-    pricePeriod: "/month + 5% VAT",
-  },
-  {
-    name: "Business Ultimate 200",
-    icon: Building2,
-    type: "business",
-    price: 949,
-    originalPrice: null,
-    speed: "200 Mbps down / 40 Mbps up",
-    features: [
-      "Connectivity: static IP, internet power boost, 1 business line, 100 international mins",
-      "Security: antivirus & bulk SMS",
-      "Digital presence: 1 domain & e-commerce starter kit",
-      "Productivity: 2× Microsoft 365 Business Basic licenses",
-      "Monthly plan after 24 months: AED 1,249 (T&C apply)",
-    ],
-    popular: false,
-    color: "#14b8a6",
-    pricePeriod: "/month + 5% VAT",
-  },
-  {
-    name: "Business Starter Pro (12 months)",
-    icon: Building2,
-    type: "business",
-    price: 239,
-    originalPrice: 299,
-    speed: "Fixed broadband with 5G router",
-    features: [
-      "20% off limited offer",
-      "Activation AED 200 + VAT",
-      "Business landline",
-      "Free e-commerce starter kit for 1 year",
-    ],
-    popular: false,
-    color: "#00C2FF",
-    pricePeriod: "/month + 5% VAT",
-  },
-  {
-    name: "Business Starter Pro (24 months)",
-    icon: Building2,
-    type: "business",
-    price: 249,
-    originalPrice: 299,
-    speed: "Fixed broadband with 5G router",
-    features: [
-      "Promotional monthly rate on 24-month term",
-      "Activation AED 200 + VAT",
-      "5G internet router",
-      "Free digital starter kit for 1 year",
-    ],
-    popular: false,
-    color: "#7c3aed",
-    pricePeriod: "/month + 5% VAT",
-  },
-]
-
-const tabs = [
+const tabs: { id: PlanType; label: string; icon: typeof Wifi }[] = [
   { id: "internet", label: "Internet Only", icon: Wifi },
   { id: "bundle", label: "Internet + TV + Landline", icon: Tv },
   { id: "business", label: "Corporate Packages", icon: Building2 },
 ]
 
 export function Plans() {
-  const [activeTab, setActiveTab] = useState("internet")
+  const [activeTab, setActiveTab] = useState<PlanType>("internet")
+  const [highlightId, setHighlightId] = useState<string | null>(null)
 
-  const filteredPlans = plans.filter((plan) => plan.type === activeTab)
+  const products = useCMSStore((s) => s.products)
+  const settings = useCMSStore((s) => s.settings)
+
+  const filteredPlans = products.filter((plan) => plan.planType === activeTab)
+
+  useEffect(() => {
+    const onNavigate = (e: Event) => {
+      const detail = (e as CustomEvent<NavigateToPlanDetail>).detail
+      if (!detail?.id) return
+      setActiveTab(detail.planType)
+      setHighlightId(detail.id)
+      // Wait for the tab switch + card render before scrolling
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const el = document.getElementById(`product-${detail.id}`)
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" })
+          } else {
+            document
+              .getElementById("plans")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+        })
+      })
+      window.setTimeout(() => setHighlightId(null), 2200)
+    }
+    window.addEventListener(NAVIGATE_TO_PLAN_EVENT, onNavigate as EventListener)
+    return () =>
+      window.removeEventListener(NAVIGATE_TO_PLAN_EVENT, onNavigate as EventListener)
+  }, [])
 
   return (
-    <section id="plans" className="relative py-32 overflow-hidden">
+    <section id="plans" className="relative overflow-hidden py-32">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#071B2A] via-[#0a2540] to-[#071B2A]" />
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#00C2FF]/10 rounded-full blur-[150px]" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#7c3aed]/10 rounded-full blur-[150px]" />
+      <div className="absolute left-1/4 top-0 h-96 w-96 rounded-full bg-[#00C2FF]/10 blur-[150px]" />
+      <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[#7c3aed]/10 blur-[150px]" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16 space-y-4"
+          className="mb-16 space-y-4 text-center"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-white">
-            Home &{" "}
-            <span className="gradient-text">Corporate Packages</span>
-          </h2>
-          <p className="text-xl text-white/60 max-w-2xl mx-auto">
-            Authorized partner offers for home and business — pricing shown includes promotional terms where noted (+ 5% VAT). Fees & charges may apply (T&C).
-          </p>
+          <h2 className="text-4xl font-bold text-white sm:text-5xl">{settings.plansSectionTitle}</h2>
+          <p className="mx-auto max-w-2xl text-xl text-white/60">{settings.plansSectionSubtitle}</p>
         </motion.div>
 
         {/* Tabs */}
@@ -268,27 +78,26 @@ export function Plans() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="flex justify-center mb-12"
+          className="mb-12 flex justify-center"
         >
-          <div className="inline-flex p-1.5 rounded-2xl glass border border-[#00C2FF]/20">
+          <div className="inline-flex rounded-2xl border border-[#00C2FF]/20 glass p-1.5">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
+                type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? "text-[#071B2A]"
-                    : "text-white/70 hover:text-white"
+                className={`relative flex items-center gap-2 rounded-xl px-6 py-3 font-medium transition-all duration-300 ${
+                  activeTab === tab.id ? "text-[#071B2A]" : "text-white/70 hover:text-white"
                 }`}
               >
                 {activeTab === tab.id && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] rounded-xl"
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#00C2FF] to-[#7c3aed]"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <tab.icon className="relative z-10 w-5 h-5" />
+                <tab.icon className="relative z-10 h-5 w-5" />
                 <span className="relative z-10">{tab.label}</span>
               </button>
             ))}
@@ -296,118 +105,170 @@ export function Plans() {
         </motion.div>
 
         {/* Plans Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredPlans.map((plan, index) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className={`relative group ${plan.popular ? "lg:-mt-4 lg:mb-4" : ""}`}
-            >
-              {/* Popular Badge */}
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] text-white text-sm font-semibold shadow-lg shadow-[#00C2FF]/30"
-                  >
-                    <Star className="w-4 h-4" />
-                    Best Seller
-                  </motion.div>
-                </div>
-              )}
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+          {filteredPlans.map((plan, index) => {
+            const Icon = getProductIcon(plan.iconKey)
+            const wa = whatsappHref(
+              settings.whatsappPhoneDigits,
+              `Hi — I'm interested in ${plan.name}`,
+            )
+            const ctaHref = plan.whatsappRedirect ? wa : "#contact"
 
-              {/* Card */}
-              <div
-                className={`relative h-full p-8 rounded-3xl glass-card overflow-hidden transition-all duration-300 ${
-                  plan.popular
-                    ? "border-[#00C2FF]/40 shadow-lg shadow-[#00C2FF]/10"
+            const isHighlighted = highlightId === plan.id
+            return (
+              <motion.div
+                key={plan.id}
+                id={`product-${plan.id}`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -10, scale: 1.02 }}
+                className={`relative group scroll-mt-32 ${plan.popular ? "lg:-mt-4 lg:mb-4" : ""} ${
+                  isHighlighted
+                    ? "rounded-3xl ring-2 ring-[#00C2FF] ring-offset-4 ring-offset-[#0a2540] shadow-[0_0_60px_-10px_rgba(0,194,255,0.55)] transition-shadow duration-500"
                     : ""
                 }`}
               >
-                {/* Glow Effect */}
-                <div
-                  className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[80px] opacity-30 group-hover:opacity-50 transition-opacity"
-                  style={{ backgroundColor: plan.color }}
-                />
-
-                {/* Content */}
-                <div className="relative space-y-6">
-                  {/* Header */}
-                  <div className="flex items-center gap-4">
-                    <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                      style={{ backgroundColor: `${plan.color}20` }}
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 md:-top-4">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="flex items-center gap-1 rounded-full bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] px-2.5 py-1 text-[10px] font-semibold text-white shadow-lg shadow-[#00C2FF]/30 sm:px-4 sm:py-1.5 sm:text-sm"
                     >
-                      <plan.icon className="w-7 h-7" style={{ color: plan.color }} />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">{plan.name}</h3>
-                      <p className="text-white/50 text-sm">{plan.speed}</p>
-                    </div>
+                      <Star className="h-3 w-3 sm:h-4 sm:w-4" />
+                      Best Seller
+                    </motion.div>
                   </div>
+                )}
 
-                  {/* Price */}
-                  <div className="space-y-1">
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                      <span className="text-4xl font-bold text-white">AED {plan.price}</span>
-                      <span className="text-white/50 text-sm">{plan.pricePeriod ?? "/month"}</span>
-                    </div>
-                    {plan.originalPrice != null && (
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-white/40 line-through">
-                          AED {plan.originalPrice}/mo
-                        </span>
-                        {plan.originalPrice > plan.price && (
-                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#00C2FF]/20 text-[#00C2FF]">
-                            Save AED {plan.originalPrice - plan.price}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                <div
+                  className={`relative h-full overflow-hidden rounded-2xl glass-card transition-all duration-300 sm:rounded-3xl ${
+                    plan.popular ? "border-[#00C2FF]/40 shadow-lg shadow-[#00C2FF]/10" : ""
+                  }`}
+                >
+                  <div
+                    className="absolute right-0 top-0 h-24 w-24 rounded-full opacity-30 blur-[60px] transition-opacity group-hover:opacity-50 sm:h-32 sm:w-32 sm:blur-[80px]"
+                    style={{ backgroundColor: plan.accentColor }}
+                  />
 
-                  {/* Features */}
-                  <ul className="space-y-3">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-3 text-white/70">
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          whileInView={{ scale: 1 }}
-                          viewport={{ once: true }}
-                          className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: `${plan.color}30` }}
+                  <div className="relative space-y-3.5 p-3.5 sm:space-y-5 sm:p-5 md:space-y-6 md:p-8">
+                    <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
+                      <div className="flex items-center gap-2 sm:gap-2.5 md:gap-4">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={plan.image}
+                          alt=""
+                          className="h-9 w-9 shrink-0 rounded-xl border border-white/10 object-cover sm:h-11 sm:w-11 md:h-14 md:w-14 md:rounded-2xl"
+                          onError={(e) => {
+                            e.currentTarget.src = "/logo.png"
+                          }}
+                        />
+                        <div
+                          className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:flex sm:h-11 sm:w-11 md:h-14 md:w-14 md:rounded-2xl"
+                          style={{ backgroundColor: `${plan.accentColor}20` }}
                         >
-                          <Check className="w-3 h-3" style={{ color: plan.color }} />
-                        </motion.div>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+                          <Icon
+                            className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7"
+                            style={{ color: plan.accentColor }}
+                          />
+                        </div>
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-[15px] font-bold leading-tight text-white sm:text-lg md:text-xl">
+                          {plan.name}
+                        </h3>
+                        <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-white/50 sm:text-xs md:text-sm">
+                          {plan.description}
+                        </p>
+                      </div>
+                    </div>
 
-                  {/* CTA Button */}
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                      plan.popular
-                        ? "bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] text-white shadow-lg shadow-[#00C2FF]/25"
-                        : "bg-white/5 text-white border border-white/10 hover:border-[#00C2FF]/50 hover:bg-white/10"
-                    }`}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <Zap className="w-5 h-5" />
-                      Get Started
-                    </span>
-                  </motion.button>
+                    <div className="space-y-1">
+                      {plan.stockStatus === "out_of_stock" ? (
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-red-300/90 sm:text-sm">
+                          Out of stock
+                        </p>
+                      ) : plan.stockStatus === "low_stock" ? (
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-300/90 sm:text-xs">
+                          Limited availability
+                        </p>
+                      ) : null}
+
+                      {plan.hidePrice ? (
+                        <p className="text-lg font-semibold text-white/75 sm:text-xl md:text-2xl">
+                          Pricing on request
+                        </p>
+                      ) : (
+                        <>
+                          <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
+                            <span className="text-2xl font-bold text-white sm:text-3xl md:text-4xl">
+                              AED {plan.price}
+                            </span>
+                            <span className="text-[11px] text-white/50 sm:text-xs md:text-sm">
+                              {plan.pricePeriod ?? "/month"}
+                            </span>
+                          </div>
+                          {plan.originalPrice != null && (
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              <span className="text-[11px] text-white/40 line-through sm:text-sm">
+                                AED {plan.originalPrice}/mo
+                              </span>
+                              {plan.originalPrice > plan.price && (
+                                <span className="rounded-full bg-[#00C2FF]/20 px-1.5 py-0.5 text-[9px] font-medium text-[#00C2FF] sm:px-2 sm:text-xs">
+                                  Save AED {plan.originalPrice - plan.price}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <ul className="space-y-2 sm:space-y-2.5 md:space-y-3">
+                      {plan.features.map((feature) => (
+                        <li
+                          key={feature}
+                          className="flex items-start gap-2 text-[12px] leading-snug text-white/70 sm:items-center sm:gap-2.5 sm:text-sm md:gap-3 md:text-base"
+                        >
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            whileInView={{ scale: 1 }}
+                            viewport={{ once: true }}
+                            className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full sm:mt-0 sm:h-5 sm:w-5"
+                            style={{ backgroundColor: `${plan.accentColor}30` }}
+                          >
+                            <Check
+                              className="h-2.5 w-2.5 sm:h-3 sm:w-3"
+                              style={{ color: plan.accentColor }}
+                            />
+                          </motion.div>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Link
+                        href={ctaHref}
+                        target={plan.whatsappRedirect ? "_blank" : undefined}
+                        rel={plan.whatsappRedirect ? "noopener noreferrer" : undefined}
+                        className={`flex w-full items-center justify-center gap-1.5 rounded-lg py-2.5 text-[13px] font-semibold transition-all duration-300 sm:gap-2 sm:rounded-xl sm:py-3 sm:text-sm md:py-4 md:text-lg ${
+                          plan.popular
+                            ? "bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] text-white shadow-lg shadow-[#00C2FF]/25"
+                            : "border border-white/10 bg-white/5 text-white hover:border-[#00C2FF]/50 hover:bg-white/10"
+                        }`}
+                      >
+                        <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                        {plan.whatsappRedirect ? "WhatsApp us" : "Get Started"}
+                      </Link>
+                    </motion.div>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </div>
       </div>
     </section>

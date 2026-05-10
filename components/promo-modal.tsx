@@ -55,7 +55,7 @@ function MiniPlanCard({
         {badge}
       </div>
 
-      <div className="relative flex flex-1 flex-col px-3 pb-3 pt-2.5">
+      <div className="relative flex flex-1 flex-col px-2.5 pb-2.5 pt-2">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00C2FF]/25 to-transparent"
           aria-hidden
@@ -63,7 +63,7 @@ function MiniPlanCard({
 
         <div className="mb-2 flex flex-col items-center gap-1">
           <BrandLogo
-            className="!h-6 !max-w-[108px] object-contain opacity-95 transition-opacity group-hover:opacity-100"
+            className="!h-5 !max-w-[92px] object-contain opacity-95 transition-opacity group-hover:opacity-100"
             priority={false}
           />
           {label ? (
@@ -79,7 +79,7 @@ function MiniPlanCard({
           </span>
           <p className="text-[11px] tabular-nums text-white/35 line-through">AED {was}</p>
           <p
-            className={`text-xl font-bold tabular-nums leading-none tracking-tight sm:text-[22px] ${
+            className={`text-lg font-bold tabular-nums leading-none tracking-tight sm:text-xl ${
               variant === "business" ? "text-white" : "gradient-text"
             }`}
           >
@@ -117,9 +117,9 @@ export function PromoModal() {
     >
       <DialogContent
         showCloseButton={false}
-        className="max-h-[min(88vh,820px)] w-[calc(100vw-20px)] max-w-[calc(100vw-20px)] gap-0 overflow-hidden border-0 bg-transparent p-1 shadow-none sm:p-2 md:w-[60vw] md:max-w-[60vw]"
+        className="max-h-[min(76vh,620px)] w-[calc(100vw-40px)] max-w-[calc(100vw-40px)] gap-0 overflow-hidden border-0 bg-transparent p-1 shadow-none sm:p-2 md:w-[46vw] md:max-w-[min(46vw,640px)]"
       >
-        <div className="relative mx-auto max-h-[min(88vh,820px)] overflow-hidden rounded-3xl border border-[#00C2FF]/25 bg-[#071B2A] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.85)]">
+        <div className="relative mx-auto max-h-[min(76vh,620px)] overflow-hidden rounded-3xl border border-[#00C2FF]/25 bg-[#071B2A] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.85)]">
           <button
             type="button"
             onClick={dismiss}
@@ -129,9 +129,9 @@ export function PromoModal() {
             <X className="h-5 w-5" strokeWidth={2.5} />
           </button>
 
-          <div className="grid overflow-hidden rounded-3xl lg:max-h-[min(82vh,780px)] lg:grid-cols-[1.05fr_1fr] lg:items-stretch">
+          <div className="grid overflow-hidden rounded-3xl lg:max-h-[min(72vh,580px)] lg:grid-cols-[1.05fr_1fr] lg:items-stretch">
             {/* Left — visual + CTA */}
-            <div className="relative min-h-[200px] lg:min-h-[min(260px,34vh)]">
+            <div className="relative min-h-[155px] lg:min-h-[min(200px,26vh)]">
               <Image
                 src={PROMO_IMAGE}
                 alt=""
@@ -143,9 +143,9 @@ export function PromoModal() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#071B2A] via-[#071B2A]/55 to-[#071B2A]/20" />
               <div className="absolute inset-0 bg-gradient-to-r from-[#071B2A]/80 to-transparent lg:to-[#071B2A]/10" />
 
-              <div className="relative flex h-full min-h-[200px] flex-col justify-between p-4 sm:p-5 lg:min-h-[min(260px,34vh)] lg:py-5">
+              <div className="relative flex h-full min-h-[155px] flex-col justify-between p-3 sm:p-4 lg:min-h-[min(200px,26vh)] lg:py-4">
                 <div>
-                  <DialogTitle className="text-left text-lg font-bold leading-tight text-white sm:text-xl lg:text-2xl">
+                  <DialogTitle className="text-left text-base font-bold leading-tight text-white sm:text-lg lg:text-xl">
                     <span className="gradient-text">GetDu</span>{" "}
                     <span className="text-white">Fastest Internet Plans</span>
                   </DialogTitle>
@@ -154,11 +154,11 @@ export function PromoModal() {
                   </DialogDescription>
                 </div>
 
-                <div className="mt-4 space-y-2 lg:mt-0">
+                <div className="mt-3 space-y-1.5 lg:mt-0">
                   <Link
                     href="#contact"
                     onClick={dismiss}
-                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#00C2FF]/25 ring-1 ring-white/10 transition hover:shadow-[#00C2FF]/40"
+                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-[#00C2FF]/25 ring-1 ring-white/10 transition hover:shadow-[#00C2FF]/40 sm:text-sm"
                   >
                     Apply Now!
                   </Link>
@@ -170,8 +170,8 @@ export function PromoModal() {
             </div>
 
             {/* Right — plan cards */}
-            <div className="flex min-h-0 flex-col justify-center overflow-hidden border-t border-[#00C2FF]/15 bg-gradient-to-b from-[#0a2540]/50 to-[#071B2A]/80 p-3 sm:p-4 lg:border-l lg:border-t-0">
-              <div className="grid min-h-0 grid-cols-1 items-stretch gap-2.5 sm:grid-cols-2 sm:gap-3">
+            <div className="flex min-h-0 flex-col justify-center overflow-hidden border-t border-[#00C2FF]/15 bg-gradient-to-b from-[#0a2540]/50 to-[#071B2A]/80 p-2.5 sm:p-3 lg:border-l lg:border-t-0">
+              <div className="grid min-h-0 grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-2.5">
                 <MiniPlanCard
                   label="Home"
                   badge="Fiber Cable"

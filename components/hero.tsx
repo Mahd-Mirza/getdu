@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ChevronDown, Play, Zap, Shield, Clock } from "lucide-react"
+import { defaultHeroBanner } from "@/lib/cms/seed"
+import { useCMSStore } from "@/stores/cms-store"
 
 /** Same on server and client — avoids hydration mismatch from Math.random(). */
 function stable01(seed: number): number {
@@ -12,6 +14,11 @@ function stable01(seed: number): number {
 
 export function Hero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
+  const hero = useCMSStore((s) => {
+    const active = s.heroBanners.find((h) => h.isActive)
+    return active ?? s.heroBanners[0] ?? defaultHeroBanner()
+  })
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -27,7 +34,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative flex min-h-screen items-center overflow-hidden pt-40 lg:pt-36"
+      className="relative flex min-h-screen items-center overflow-hidden pt-10 pb-12 md:pt-14 md:pb-16 lg:pt-16 lg:pb-20"
     >
       {/* Animated Background */}
       <div className="absolute inset-0">
@@ -88,19 +95,29 @@ export function Hero() {
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-[#00C2FF]/30"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00C2FF] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00C2FF]" />
-              </span>
-              <span className="text-sm text-[#00C2FF] font-medium">Services At Your Doorstep</span>
-            </motion.div>
+            <div className="flex flex-col items-center space-y-2 md:items-start md:space-y-3">
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="block text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-[#00C2FF]/82 min-[375px]:text-[11.5px] md:text-left md:text-[10px] md:tracking-[0.2em] md:text-[#00C2FF]/55"
+              >
+                {hero.eyebrow}
+              </motion.p>
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-[#00C2FF]/30"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00C2FF] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00C2FF]" />
+                </span>
+                <span className="text-sm text-[#00C2FF] font-medium">{hero.badgeLabel}</span>
+              </motion.div>
+            </div>
 
             {/* Heading */}
             <div className="space-y-4">
@@ -110,8 +127,8 @@ export function Hero() {
                 transition={{ delay: 0.3 }}
                 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight"
               >
-                Home{" "}
-                <span className="gradient-text">Internet</span>
+                {hero.titleBefore}{" "}
+                <span className="gradient-text">{hero.titleHighlight}</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -119,9 +136,7 @@ export function Hero() {
                 transition={{ delay: 0.4 }}
                 className="text-xl sm:text-2xl text-white/60 font-light"
               >
-                25% discount for 24 months or 2 months free — router included.{" "}
-                <span className="text-[#00C2FF]">Fiber</span> &{" "}
-                <span className="text-[#7c3aed]">5G</span> plans for UAE homes and businesses.
+                {hero.subtitle}
               </motion.p>
             </div>
 
@@ -133,11 +148,11 @@ export function Hero() {
               className="flex flex-wrap gap-6"
             >
               {[
-                { icon: Zap, text: "Doorstep signup & installation" },
-                { icon: Shield, text: "Authorized du partner" },
-                { icon: Clock, text: "Dedicated customer care" },
-              ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-2 text-white/70">
+                { icon: Zap, text: hero.feature1 },
+                { icon: Shield, text: hero.feature2 },
+                { icon: Clock, text: hero.feature3 },
+              ].map((feature) => (
+                <div key={feature.text} className="flex items-center gap-2 text-white/70">
                   <feature.icon className="w-5 h-5 text-[#00C2FF]" />
                   <span>{feature.text}</span>
                 </div>
@@ -152,22 +167,22 @@ export function Hero() {
               className="flex flex-wrap gap-4"
             >
               <motion.a
-                href="#plans"
+                href={hero.primaryCtaHref}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="group relative px-8 py-4 rounded-full bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] text-white font-semibold text-lg overflow-hidden shadow-lg shadow-[#00C2FF]/25"
               >
-                <span className="relative z-10">View Plans</span>
+                <span className="relative z-10">{hero.primaryCtaLabel}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-[#7c3aed] to-[#00C2FF] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.a>
               <motion.a
-                href="#contact"
+                href={hero.secondaryCtaHref}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex items-center gap-2 px-8 py-4 rounded-full glass border border-[#00C2FF]/30 text-white font-semibold text-lg hover:border-[#00C2FF]/60 transition-colors"
               >
                 <Play className="w-5 h-5 text-[#00C2FF]" />
-                Get Connected
+                {hero.secondaryCtaLabel}
               </motion.a>
             </motion.div>
           </motion.div>
@@ -202,35 +217,48 @@ export function Hero() {
                 {/* Glow Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#00C2FF]/30 to-[#7c3aed]/30 rounded-full blur-[60px]" />
                 
-                {/* Router Body */}
-                <div className="absolute inset-8 glass-card flex items-center justify-center">
-                  <div className="space-y-4 text-center">
-                    {/* Router Icon */}
-                    <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-[#00C2FF] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#00C2FF]/30">
-                      <svg viewBox="0 0 24 24" className="w-12 h-12 text-white" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    
-                    {/* Signal Indicators */}
-                    <div className="flex justify-center gap-2">
-                      {[1, 2, 3].map((i) => (
-                        <motion.div
-                          key={i}
-                          animate={{ opacity: [0.3, 1, 0.3] }}
-                          transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
-                          className="w-2 h-2 rounded-full bg-[#00C2FF]"
-                        />
-                      ))}
-                    </div>
-                    
-                    {/* Speed Display */}
-                    <div className="text-2xl font-bold text-white">
-                      Up to{" "}
-                      <span className="text-[#00C2FF]">1 Gbps</span>
+                {hero.heroSideImage ? (
+                  <div className="absolute inset-8 overflow-hidden rounded-3xl glass-card">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={hero.heroSideImage}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/logo.png"
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="absolute inset-8 glass-card flex items-center justify-center">
+                    <div className="space-y-4 text-center">
+                      {/* Router Icon */}
+                      <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-[#00C2FF] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#00C2FF]/30">
+                        <svg viewBox="0 0 24 24" className="w-12 h-12 text-white" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </div>
+
+                      {/* Signal Indicators */}
+                      <div className="flex justify-center gap-2">
+                        {[1, 2, 3].map((i) => (
+                          <motion.div
+                            key={i}
+                            animate={{ opacity: [0.3, 1, 0.3] }}
+                            transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                            className="w-2 h-2 rounded-full bg-[#00C2FF]"
+                          />
+                        ))}
+                      </div>
+
+                      {/* Speed Display */}
+                      <div className="text-2xl font-bold text-white">
+                        {hero.speedPrimary}{" "}
+                        <span className="text-[#00C2FF]">{hero.speedHighlight}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Orbiting Elements */}
                 <motion.div
