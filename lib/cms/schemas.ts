@@ -11,7 +11,7 @@ export const categorySchema = z.object({
     .string()
     .min(2)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens"),
-  planType: z.enum(["internet", "bundle", "business"]),
+  planType: z.enum(["internet", "bundle"]),
   description: z.string().optional(),
 })
 
@@ -25,7 +25,7 @@ export const productFormSchema = z
     featuresText: z.string().min(4, "Add at least one feature per line"),
     popular: z.boolean(),
     accentColor: z.string().regex(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i, "Use a hex color"),
-    planType: z.enum(["internet", "bundle", "business"]),
+    planType: z.enum(["internet", "bundle"]),
     iconKey: z.enum(["wifi", "tv", "building"]),
     image: z.string().min(4),
     categoryId: z.string().min(1),
@@ -73,7 +73,7 @@ export const settingsSchema = z.object({
   whatsappPhoneDigits: z
     .string()
     .min(4)
-    .refine((s) => s.replace(/\D/g, "").length >= 8, "Include country code (e.g. 97144310766)"),
+    .refine((s) => s.replace(/\D/g, "").length >= 8, "Include country code (e.g. 971563656816)"),
   totalUsersDisplay: z.coerce.number().int().nonnegative(),
   plansSectionTitle: z.string().min(2),
   plansSectionSubtitle: z.string().min(10),

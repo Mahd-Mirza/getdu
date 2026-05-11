@@ -228,7 +228,6 @@ export function ProductDialog({
                     <SelectContent>
                       <SelectItem value="internet">Internet only</SelectItem>
                       <SelectItem value="bundle">Internet + TV + Landline</SelectItem>
-                      <SelectItem value="business">Corporate</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -249,7 +248,7 @@ export function ProductDialog({
                     <SelectContent>
                       <SelectItem value="wifi">Wi‑Fi</SelectItem>
                       <SelectItem value="tv">TV</SelectItem>
-                      <SelectItem value="building">Business</SelectItem>
+                      <SelectItem value="building">Building</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

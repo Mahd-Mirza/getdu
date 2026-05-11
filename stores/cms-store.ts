@@ -12,10 +12,14 @@ import type {
   CMSSettings,
   PlanType,
 } from "@/lib/cms/types"
-import { buildInitialCmsState, defaultHeroBanner } from "@/lib/cms/seed"
+import {
+  buildInitialCmsState,
+  defaultHeroBanner,
+  DEFAULT_WHATSAPP_PHONE_DIGITS,
+} from "@/lib/cms/seed"
 
 export const CMS_STORAGE_KEY = "getdu-cms-state"
-const STORAGE_VERSION = 1
+const STORAGE_VERSION = 3
 
 function isoNow() {
   return new Date().toISOString()
@@ -310,6 +314,50 @@ export const useCMSStore = create<CMSStore>()(
       version: STORAGE_VERSION,
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => cmsStateToPersist(s),
+      migrate: (persisted, fromVersion) => {
+        const slice = persisted as Partial<ReturnType<typeof cmsStateToPersist>> | null
+        if (!slice) return persisted
+
+        if (fromVersion < 2 && slice.settings) {
+          const d = slice.settings.whatsappPhoneDigits?.replace(/\D/g, "") ?? ""
+          if (!d || d === "97144310766") {
+            slice.settings = {
+              ...slice.settings,
+              whatsappPhoneDigits: DEFAULT_WHATSAPP_PHONE_DIGITS,
+            }
+          }
+        }
+
+        if (fromVersion < 3) {
+          if (Array.isArray(slice.categories)) {
+            slice.categories = slice.categories.filter((c) => {
+              const t = (c as { planType?: string }).planType
+              return t !== "business"
+            })
+          }
+          if (Array.isArray(slice.products)) {
+            slice.products = slice.products.filter((p) => {
+              const t = (p as { planType?: string }).planType
+              return t !== "business"
+            })
+          }
+          const ids = new Set(
+            (slice.products ?? []).map((p) => (p as CMSProduct).id),
+          )
+          if (slice.featured?.productIds) {
+            slice.featured.productIds = slice.featured.productIds.filter((id) =>
+              ids.has(id),
+            )
+          }
+          if (Array.isArray(slice.orders)) {
+            slice.orders = slice.orders.filter((o) =>
+              ids.has((o as CMSOrder).productId),
+            )
+          }
+        }
+
+        return persisted
+      },
       onRehydrateStorage: () => () => {
         queueMicrotask(() => useCMSStore.getState().setHasHydrated(true))
       },
@@ -325,8 +373,11 @@ export function selectProductsByPlanType(
   return products.filter((p) => p.planType === tab)
 }
 
+export { DEFAULT_WHATSAPP_PHONE_DIGITS } from "@/lib/cms/seed"
+
 export function whatsappHref(digits: string, message?: string) {
-  const d = digits.replace(/\D/g, "")
+  let d = digits.replace(/\D/g, "")
+  if (!d || d === "97144310766") d = DEFAULT_WHATSAPP_PHONE_DIGITS
   const q = message ? `?text=${encodeURIComponent(message)}` : ""
   return `https://wa.me/${d}${q}`
 }

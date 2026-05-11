@@ -232,7 +232,6 @@ export default function AdminCategoriesPage() {
                 <SelectContent>
                   <SelectItem value="internet">Internet only</SelectItem>
                   <SelectItem value="bundle">Internet + TV + Landline</SelectItem>
-                  <SelectItem value="business">Corporate</SelectItem>
                 </SelectContent>
               </Select>
             </div>

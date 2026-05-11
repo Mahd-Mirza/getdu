@@ -8,7 +8,7 @@ const steps = [
     number: "01",
     icon: Home,
     title: "New home or office?",
-    description: "Tell us what you need — we’ll recommend the right du home or business package.",
+    description: "Tell us what you need — we’ll recommend the right du home package.",
     color: "#00C2FF",
   },
   {

@@ -86,8 +86,26 @@ export function Hero() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,194,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,194,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-28">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
+        {/* Representative — top, full width, uppercase */}
+        <motion.div
+          initial={{ opacity: 0, y: -24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-7 text-center sm:mb-9 lg:mb-10"
+        >
+          <p
+            className="mx-auto max-w-[min(100%,52rem)] font-extrabold uppercase leading-snug tracking-[0.08em] text-[clamp(1.4375rem,4.05vw,2.375rem)] sm:tracking-[0.1em] md:tracking-[0.12em] gradient-text [filter:drop-shadow(0_0_24px_rgba(0,194,255,0.38))]"
+          >
+            Muhammad Waqar
+          </p>
+          <div
+            className="mx-auto mt-2.5 h-px max-w-[10rem] bg-gradient-to-r from-transparent via-[#00C2FF]/50 to-transparent sm:max-w-xs"
+            aria-hidden
+          />
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-12 items-center">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}

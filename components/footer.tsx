@@ -11,7 +11,6 @@ const footerLinks = {
     { name: "Home Packages", href: "#plans" },
     { name: "Internet + TV + Landline", href: "#plans" },
     { name: "Internet Only (5G)", href: "#plans" },
-    { name: "Corporate Packages", href: "#business" },
   ],
   Company: [
     { name: "About GetDu.ae", href: "#why-us" },

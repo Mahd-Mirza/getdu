@@ -28,12 +28,12 @@ function toForm(b?: CMSHeroBanner | null): HeroFormValues {
   if (!b) {
     return {
       name: "New homepage hero",
-      eyebrow: "UAE · Residential & Business",
+      eyebrow: "UAE · Residential",
       badgeLabel: "Services At Your Doorstep",
       titleBefore: "Home",
       titleHighlight: "Internet",
       subtitle:
-        "25% discount for 24 months or 2 months free — router included. Fiber & 5G plans for UAE homes and businesses.",
+        "25% discount for 24 months or 2 months free — router included. Fiber & 5G plans for UAE homes.",
       feature1: "Doorstep signup & installation",
       feature2: "Authorized du partner",
       feature3: "Dedicated customer care",

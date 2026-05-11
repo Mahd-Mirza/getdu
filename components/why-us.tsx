@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import { motion, useInView } from "framer-motion"
+import type { LucideIcon } from "lucide-react"
 import { Zap, Shield, Clock, Users, Award, Headphones, Globe, Wifi } from "lucide-react"
 
 const features = [
@@ -14,7 +15,7 @@ const features = [
   {
     icon: Shield,
     title: "Trusted du channel partner",
-    description: "Authorized partner delivering regulated du home and business plans with transparent promotions.",
+    description: "Authorized partner delivering regulated du home plans with transparent promotions.",
     color: "#7c3aed",
   },
   {
@@ -32,7 +33,7 @@ const features = [
   {
     icon: Globe,
     title: "Coverage across the UAE",
-    description: "Residential and corporate solutions for communities and business districts nationwide.",
+    description: "Residential connectivity for communities across the UAE nationwide.",
     color: "#7c3aed",
   },
   {
@@ -43,9 +44,12 @@ const features = [
   },
 ]
 
-const stats = [
+const stats: Array<
+  | { value: number; suffix: string; label: string; icon: LucideIcon }
+  | { display: string; label: string; icon: LucideIcon }
+> = [
   { value: 13, suffix: "+ yrs", label: "Authorized partner experience", icon: Users },
-  { value: 800, suffix: "", label: "Toll-free sales line", icon: Shield },
+  { display: "+971563656816", label: "Sales hotline", icon: Shield },
   { value: 24, suffix: "/7", label: "Customer-care access", icon: Headphones },
   { value: 100, suffix: "%", label: "Doorstep-first coordination", icon: Globe },
 ]
@@ -121,7 +125,7 @@ export function WhyUs() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-20"
+          className="mb-20 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4 lg:gap-6"
         >
           {stats.map((stat, index) => (
             <motion.div
@@ -133,26 +137,32 @@ export function WhyUs() {
               whileHover={{ y: -5 }}
               className="relative group"
             >
-              <div className="p-6 rounded-3xl glass-card text-center hover:border-[#00C2FF]/40 transition-all duration-300">
+              <div className="rounded-2xl glass-card p-3.5 text-center transition-all duration-300 hover:border-[#00C2FF]/40 sm:rounded-3xl sm:p-5 md:p-6">
                 {/* Icon */}
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#00C2FF]/20 to-[#7c3aed]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <stat.icon className="w-7 h-7 text-[#00C2FF]" />
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#00C2FF]/20 to-[#7c3aed]/20 transition-transform group-hover:scale-110 sm:mb-4 sm:h-12 sm:w-12 sm:rounded-2xl md:h-14 md:w-14">
+                  <stat.icon className="h-5 w-5 text-[#00C2FF] sm:h-6 sm:w-6 md:h-7 md:w-7" />
                 </div>
-                
+
                 {/* Value */}
-                <p className="text-4xl font-bold text-white mb-2">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                <p
+                  className={`mb-1 font-bold text-white sm:mb-2 ${
+                    "display" in stat
+                      ? "break-all text-lg tabular-nums sm:text-2xl md:text-3xl"
+                      : "text-2xl sm:text-3xl md:text-4xl"
+                  }`}
+                >
+                  {"display" in stat ? stat.display : <AnimatedCounter value={stat.value} suffix={stat.suffix} />}
                 </p>
-                
+
                 {/* Label */}
-                <p className="text-white/60">{stat.label}</p>
+                <p className="text-[11px] leading-snug text-white/60 sm:text-sm">{stat.label}</p>
               </div>
             </motion.div>
           ))}
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 md:gap-6 lg:grid-cols-3">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -163,10 +173,10 @@ export function WhyUs() {
               whileHover={{ y: -5 }}
               className="group relative"
             >
-              <div className="relative p-8 rounded-3xl glass-card overflow-hidden hover:border-[#00C2FF]/40 transition-all duration-300">
+              <div className="relative overflow-hidden rounded-2xl glass-card p-3.5 transition-all duration-300 hover:border-[#00C2FF]/40 sm:rounded-3xl sm:p-5 md:p-8">
                 {/* Background Glow */}
                 <div
-                  className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity"
+                  className="absolute right-0 top-0 h-20 w-20 rounded-full opacity-20 blur-[50px] transition-opacity group-hover:opacity-40 sm:h-28 sm:w-28 sm:blur-[70px] md:h-32 md:w-32 md:blur-[80px]"
                   style={{ backgroundColor: feature.color }}
                 />
 
@@ -174,15 +184,19 @@ export function WhyUs() {
                 <div className="relative">
                   {/* Icon */}
                   <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
+                    className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl transition-transform group-hover:scale-110 sm:mb-5 sm:h-14 sm:w-14 sm:rounded-2xl md:mb-6 md:h-16 md:w-16"
                     style={{ backgroundColor: `${feature.color}20` }}
                   >
-                    <feature.icon className="w-8 h-8" style={{ color: feature.color }} />
+                    <feature.icon className="h-5 w-5 sm:h-7 sm:w-7 md:h-8 md:w-8" style={{ color: feature.color }} />
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-                  <p className="text-white/60 leading-relaxed">{feature.description}</p>
+                  <h3 className="mb-1.5 text-[14px] font-bold leading-tight text-white sm:mb-3 sm:text-lg md:text-xl">
+                    {feature.title}
+                  </h3>
+                  <p className="text-[11px] leading-snug text-white/60 sm:text-sm sm:leading-relaxed md:text-base">
+                    {feature.description}
+                  </p>
                 </div>
 
                 {/* Hover Line */}

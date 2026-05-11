@@ -20,12 +20,11 @@ const PROMO_IMAGE =
 type MiniPlanProps = {
   label?: string
   badge: string
-  /** Tailwind classes for the top ribbon (gradient or solid business bar) */
+  /** Tailwind classes for the top ribbon */
   badgeClassName: string
   was: number
   now: number
   detail: ReactNode
-  variant?: "home" | "business"
 }
 
 function MiniPlanCard({
@@ -35,18 +34,13 @@ function MiniPlanCard({
   was,
   now,
   detail,
-  variant = "home",
 }: MiniPlanProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className={`group flex flex-col overflow-hidden rounded-xl border shadow-md transition-[border-color,box-shadow] duration-300 ${
-        variant === "business"
-          ? "border-[#00C2FF]/25 bg-[#050f14]/90 shadow-black/40 hover:border-[#00C2FF]/35"
-          : "border-[#00C2FF]/20 bg-[#071B2A]/85 shadow-[#00C2FF]/8 hover:border-[#00C2FF]/35 hover:shadow-[#00C2FF]/12"
-      }`}
+      className="group flex flex-col overflow-hidden rounded-xl border border-[#00C2FF]/20 bg-[#071B2A]/85 shadow-md shadow-[#00C2FF]/8 transition-[border-color,box-shadow] duration-300 hover:border-[#00C2FF]/35 hover:shadow-[#00C2FF]/12"
     >
       {/* Ribbon */}
       <div
@@ -78,11 +72,7 @@ function MiniPlanCard({
             / mo + VAT
           </span>
           <p className="text-[11px] tabular-nums text-white/35 line-through">AED {was}</p>
-          <p
-            className={`text-lg font-bold tabular-nums leading-none tracking-tight sm:text-xl ${
-              variant === "business" ? "text-white" : "gradient-text"
-            }`}
-          >
+          <p className="gradient-text text-lg font-bold tabular-nums leading-none tracking-tight sm:text-xl">
             AED {now}
           </p>
         </div>
@@ -150,7 +140,7 @@ export function PromoModal() {
                     <span className="text-white">Fastest Internet Plans</span>
                   </DialogTitle>
                   <DialogDescription className="mt-1.5 max-w-md text-left text-[11px] leading-snug text-white/65 sm:text-xs">
-                    Limited-time doorstep offers — fiber, wireless & business 5G.
+                    Limited-time doorstep offers — fiber & wireless 5G for home.
                   </DialogDescription>
                 </div>
 
@@ -189,28 +179,14 @@ export function PromoModal() {
                   label="Home"
                   badge="Wireless"
                   badgeClassName="bg-gradient-to-r from-[#00C2FF] via-[#0099cc] to-[#7c3aed]"
-                  was={249}
-                  now={229}
-                  detail={<span>5G router · Unlimited data · 12 mo contract</span>}
+                  was={229}
+                  now={160.3}
+                  detail={
+                    <span>
+                      30% off — new customers (6 mo on Entertainment/Gaming, 3 mo on Plus) · unlimited 5G · 12 mo
+                    </span>
+                  }
                 />
-              </div>
-              <div className="mt-2 flex shrink-0 justify-center sm:mt-2">
-                <div className="w-full max-w-none sm:max-w-[82%]">
-                  <MiniPlanCard
-                    variant="business"
-                    label="Business"
-                    badge="Wireless 5G"
-                    badgeClassName="border-b border-[#00C2FF]/25 bg-[#071B2A] text-[#a5f3fc]"
-                    was={399}
-                    now={279}
-                    detail={
-                      <>
-                        5G router ·{" "}
-                        <span className="font-semibold text-[#00C2FF]">30% off</span> first 6 months
-                      </>
-                    }
-                  />
-                </div>
               </div>
             </div>
           </div>

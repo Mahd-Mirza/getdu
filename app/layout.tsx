@@ -16,9 +16,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'GetDu.ae — du Authorized Partner | Home & Corporate Internet UAE',
+  title: 'GetDu.ae — du Authorized Partner | Home Internet UAE',
   description:
-    'Personalized du home and business packages at your doorstep. Callback on 800 - 43838 · customercare@getdu.ae — fiber, 5G, TV & landline offers (T&C apply).',
+    'Personalized du home packages at your doorstep. Call +971 56 365 6816 · mirzaw525@gmail.com — fiber, 5G, TV & landline offers (T&C apply).',
   generator: 'v0.app',
   icons: {
     icon: [{ url: '/logo.png', type: 'image/png' }],
@@ -26,15 +26,15 @@ export const metadata: Metadata = {
     apple: '/logo.png',
   },
   openGraph: {
-    title: 'GetDu.ae — du Authorized Partner | Home & Corporate Internet UAE',
+    title: 'GetDu.ae — du Authorized Partner | Home Internet UAE',
     description:
-      'Personalized du home and business packages at your doorstep. 800 - 43838 · customercare@getdu.ae',
+      'Personalized du home packages at your doorstep. +971 56 365 6816 · mirzaw525@gmail.com',
     images: [{ url: '/logo.png', width: 200, height: 56, alt: 'GetDu.ae' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'GetDu.ae — du Authorized Partner',
-    description: 'Home & corporate internet UAE · 800 - 43838',
+    description: 'Home internet UAE · +971 56 365 6816',
     images: ['/logo.png'],
   },
 }

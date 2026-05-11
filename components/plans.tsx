@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Building2, Check, Tv, Wifi, Zap, Star } from "lucide-react"
+import { Check, Tv, Wifi, Zap, Star } from "lucide-react"
 import type { PlanType } from "@/lib/cms/types"
 import { getProductIcon } from "@/lib/cms/icons"
 import { useCMSStore, whatsappHref } from "@/stores/cms-store"
@@ -14,7 +14,6 @@ export const NAVIGATE_TO_PLAN_EVENT = "navigate-to-plan"
 const tabs: { id: PlanType; label: string; icon: typeof Wifi }[] = [
   { id: "internet", label: "Internet Only", icon: Wifi },
   { id: "bundle", label: "Internet + TV + Landline", icon: Tv },
-  { id: "business", label: "Corporate Packages", icon: Building2 },
 ]
 
 export function Plans() {

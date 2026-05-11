@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
 import { Plans } from "@/components/plans"
-import { Business } from "@/components/business"
 import { WhyUs } from "@/components/why-us"
 import { Process } from "@/components/process"
 import { Contact } from "@/components/contact"
@@ -30,10 +29,7 @@ export default function Home() {
         
         {/* Pricing Plans */}
         <Plans />
-        
-        {/* Corporate/Business Section */}
-        <Business />
-        
+
         {/* Why Choose Us */}
         <WhyUs />
         

@@ -74,7 +74,7 @@ export default function AdminSettingsPage() {
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="wa">WhatsApp phone (digits)</Label>
-              <Input id="wa" {...form.register("whatsappPhoneDigits")} placeholder="97144310766" />
+              <Input id="wa" {...form.register("whatsappPhoneDigits")} placeholder="971563656816" />
               <p className="text-xs text-muted-foreground">
                 Used by the floating WhatsApp button and product CTAs that opt into redirects.
               </p>

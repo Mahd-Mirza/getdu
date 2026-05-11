@@ -1,4 +1,4 @@
-export type PlanType = "internet" | "bundle" | "business"
+export type PlanType = "internet" | "bundle"
 
 export type StockStatus = "in_stock" | "low_stock" | "out_of_stock"
 

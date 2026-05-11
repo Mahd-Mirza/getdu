@@ -2,17 +2,16 @@
 
 import { useState, useEffect, useRef, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Phone, ChevronRight, Search, Wifi, Tv, Building2, SearchX } from "lucide-react"
+import { Menu, X, Phone, Mail, ChevronRight, Search, Wifi, Tv, SearchX } from "lucide-react"
 import Link from "next/link"
 import { BrandLogo } from "@/components/brand-logo"
-import { useCMSStore } from "@/stores/cms-store"
+import { useCMSStore, whatsappHref } from "@/stores/cms-store"
 import type { CMSProduct, PlanType } from "@/lib/cms/types"
 import { NAVIGATE_TO_PLAN_EVENT, type NavigateToPlanDetail } from "@/components/plans"
 
 const planTypeMeta: Record<PlanType, { label: string; icon: typeof Wifi }> = {
   internet: { label: "Internet Only", icon: Wifi },
   bundle: { label: "Internet + TV", icon: Tv },
-  business: { label: "Corporate", icon: Building2 },
 }
 
 function scoreProduct(p: CMSProduct, q: string): number {
@@ -42,7 +41,6 @@ const navLinks = [
   { name: "Home", href: "#home" },
   { name: "About Us", href: "#why-us" },
   { name: "Home Packages", href: "#plans" },
-  { name: "Corporate Packages", href: "#business" },
   { name: "Contact Us", href: "#contact" },
 ]
 
@@ -50,7 +48,7 @@ const linkFocus =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00C2FF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071B2A] rounded-sm"
 
 /** Matches hero / site CTAs: cyan → purple gradient */
-const phoneBtnClass = `${linkFocus} inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] px-5 py-2.5 text-sm font-semibold tracking-tight text-white shadow-lg shadow-[#00C2FF]/25 ring-1 ring-white/10 transition-[box-shadow,transform] hover:shadow-[#00C2FF]/40 sm:px-6 sm:text-[15px]`
+const phoneBtnClass = `${linkFocus} inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-[#00C2FF] to-[#7c3aed] px-3.5 py-1.5 text-xs font-semibold tracking-tight text-white shadow-lg shadow-[#00C2FF]/25 ring-1 ring-white/10 transition-[box-shadow,transform] hover:-translate-y-px hover:shadow-[#00C2FF]/40 active:scale-[0.995] sm:px-5 sm:text-[13px]`
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -60,6 +58,8 @@ export function Navbar() {
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   const products = useCMSStore((s) => s.products)
+  const whatsappDigits = useCMSStore((s) => s.settings.whatsappPhoneDigits)
+  const whatsappChatHref = whatsappHref(whatsappDigits)
 
   const searchResults = useMemo(() => {
     const q = searchQuery.trim()
@@ -165,18 +165,29 @@ export function Navbar() {
               </span>
             </p>
 
-            <div className="order-1 flex justify-center md:order-2">
-              <motion.a
-                href="tel:80043838"
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.995 }}
-                className={`${phoneBtnClass} max-md:gap-0.5 max-md:px-2.5 max-md:py-px max-md:text-[10px] max-md:shadow-md max-md:ring-0`}
+            <div className="order-1 flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:justify-center md:order-2 md:gap-3">
+              <a
+                href={whatsappChatHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Chat on WhatsApp at +971 56 365 6816"
+                className={`${phoneBtnClass} max-md:gap-0.5 max-md:px-2 max-md:py-px max-md:text-[9px] max-md:shadow-md max-md:ring-0`}
               >
-                <span className="flex h-8 w-8 max-md:h-[18px] max-md:w-[18px] items-center justify-center rounded-full bg-black/20 ring-1 ring-white/15 max-md:ring-0">
-                  <Phone className="h-4 w-4 max-md:h-2.5 max-md:w-2.5 text-white" strokeWidth={2} aria-hidden />
+                <span className="flex h-7 w-7 max-md:h-4 max-md:w-4 items-center justify-center rounded-full bg-black/20 ring-1 ring-white/15 max-md:ring-0">
+                  <Phone className="h-3.5 w-3.5 max-md:h-2.5 max-md:w-2.5 text-white" strokeWidth={2} aria-hidden />
                 </span>
-                <span className="tabular-nums tracking-wide">800&nbsp;-&nbsp;43838</span>
-              </motion.a>
+                <span className="tabular-nums tracking-wide">+971&nbsp;56&nbsp;365&nbsp;6816</span>
+              </a>
+              <a
+                href="mailto:mirzaw525@gmail.com"
+                aria-label="Email mirzaw525@gmail.com"
+                className={`${linkFocus} inline-flex max-w-[min(100%,280px)] cursor-pointer items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-[10px] font-medium text-white/90 shadow-md shadow-black/20 ring-1 ring-[#00C2FF]/15 transition-[box-shadow,transform] hover:-translate-y-px hover:border-[#00C2FF]/35 hover:bg-white/[0.09] hover:text-white active:scale-[0.995] sm:max-w-none sm:text-[11px]`}
+              >
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black/20 ring-1 ring-white/12">
+                  <Mail className="h-3 w-3 text-[#00C2FF]" strokeWidth={2} aria-hidden />
+                </span>
+                <span className="min-w-0 truncate sm:whitespace-normal">mirzaw525@gmail.com</span>
+              </a>
             </div>
 
             <div className="order-3 flex flex-col items-center gap-0 md:flex-row md:justify-end md:gap-4">
@@ -453,7 +464,7 @@ export function Navbar() {
                           <p className="mt-0.5 text-[12px] text-white/55">
                             Try a different keyword like <span className="text-[#00C2FF]/85">Internet</span>,{" "}
                             <span className="text-[#00C2FF]/85">TV</span>, or{" "}
-                            <span className="text-[#00C2FF]/85">Business</span>.
+                            <span className="text-[#00C2FF]/85">5G</span>.
                           </p>
                         </div>
                       </div>
@@ -562,14 +573,28 @@ export function Navbar() {
                 Call us anytime
               </motion.p>
               <motion.a
-                href="tel:80043838"
+                href={whatsappChatHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Chat on WhatsApp at +971 56 365 6816"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.24, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className={`${phoneBtnClass} flex w-full justify-center rounded-full py-3.5 shadow-lg`}
+                className={`${phoneBtnClass} flex w-full justify-center rounded-full py-2.5 shadow-lg`}
               >
-                <Phone className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
-                <span className="tabular-nums">800&nbsp;-&nbsp;43838</span>
+                <Phone className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                <span className="tabular-nums">+971&nbsp;56&nbsp;365&nbsp;6816</span>
+              </motion.a>
+              <motion.a
+                href="mailto:mirzaw525@gmail.com"
+                aria-label="Email mirzaw525@gmail.com"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.28, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className={`${linkFocus} mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-2 text-xs font-medium text-white/90 transition-[transform] hover:-translate-y-px active:scale-[0.995]`}
+              >
+                <Mail className="h-3.5 w-3.5 shrink-0 text-[#00C2FF]" strokeWidth={2} aria-hidden />
+                mirzaw525@gmail.com
               </motion.a>
             </div>
           </motion.aside>
