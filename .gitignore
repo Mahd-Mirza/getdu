@@ -14,5 +14,5 @@ node_modules
 .next/
 .DS_Store
 
-# Server-synced CMS snapshot (written at runtime by /api/cms)
-/data/cms.json
+# # Server-synced CMS snapshot (written at runtime by /api/cms)
+# /data/cms.json
