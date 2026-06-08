@@ -112,7 +112,7 @@ export function WhyUs() {
             <span className="text-sm text-[#00C2FF] font-medium">Why Choose Us</span>
           </div>
           <h2 className="text-4xl sm:text-5xl font-bold text-white">
-            Why choose <span className="gradient-text">GetDu.ae</span>
+            Why choose <span className="gradient-text">GetDu.digital</span>
           </h2>
           <p className="text-xl text-white/60 max-w-2xl mx-auto">
             Personalized telecom at your door — queue-less callbacks, professional field teams, and du-official packages tailored to homes and corporates.
