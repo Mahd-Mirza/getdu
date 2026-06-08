@@ -34,14 +34,20 @@ function newestIsoMs(slice: ReturnType<typeof cmsStateToPersist>): number {
 export function CmsServerSync() {
   const hydrated = useCMSStore((s) => s._hasHydrated)
   const applyingRemote = useRef(false)
+  /** Block PUT until the first server pull finishes — avoids overwriting cms.json with seed data. */
+  const serverPullDone = useRef(false)
 
   useEffect(() => {
     if (!hydrated) return
     let cancelled = false
+    serverPullDone.current = false
     ;(async () => {
       try {
         const res = await fetch("/api/cms", { cache: "no-store" })
-        if (!res.ok || cancelled) return
+        if (cancelled) return
+        if (!res.ok) {
+          return
+        }
         const data = await res.json()
         if (!data || typeof data !== "object" || cancelled) return
 
@@ -51,19 +57,19 @@ export function CmsServerSync() {
         const hadLocal = hadPersistedClientSnapshot()
 
         if (
-          hadLocal &&
-          newestIsoMs(serverSlice) < newestIsoMs(clientSlice)
+          !hadLocal ||
+          newestIsoMs(serverSlice) >= newestIsoMs(clientSlice)
         ) {
-          return
+          applyingRemote.current = true
+          useCMSStore.setState(serverSlice as Partial<CMSStore>)
+          queueMicrotask(() => {
+            applyingRemote.current = false
+          })
         }
-
-        applyingRemote.current = true
-        useCMSStore.setState(serverSlice as Partial<CMSStore>)
-        queueMicrotask(() => {
-          applyingRemote.current = false
-        })
       } catch {
         /* offline or invalid JSON */
+      } finally {
+        if (!cancelled) serverPullDone.current = true
       }
     })()
     return () => {
@@ -75,7 +81,13 @@ export function CmsServerSync() {
     let timeout: ReturnType<typeof setTimeout>
 
     const unsub = useCMSStore.subscribe((state) => {
-      if (!state._hasHydrated || applyingRemote.current) return
+      if (
+        !state._hasHydrated ||
+        !serverPullDone.current ||
+        applyingRemote.current
+      ) {
+        return
+      }
 
       clearTimeout(timeout)
       timeout = setTimeout(() => {
