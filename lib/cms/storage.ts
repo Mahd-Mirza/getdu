@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile } from "fs/promises"
-import { head, put } from "@vercel/blob"
+import { get, put } from "@vercel/blob"
 import path from "path"
 
 const DATA_PATH = path.join(process.cwd(), "data", "cms.json")
@@ -23,6 +23,13 @@ export function hasPersistentStorage() {
 function useBlobStorage() {
   // Legacy static token, or OIDC (BLOB_STORE_ID + auto-injected VERCEL_OIDC_TOKEN on Vercel).
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID)
+}
+
+/** Must match your Vercel Blob store access (private is the default for new stores). */
+function blobAccess(): "private" | "public" {
+  const v = process.env.BLOB_ACCESS?.toLowerCase()
+  if (v === "public" || v === "private") return v
+  return "private"
 }
 
 function useKvStorage() {
@@ -52,21 +59,17 @@ async function readFromFile(): Promise<unknown | null> {
 }
 
 async function readFromBlob(): Promise<unknown | null> {
-  const meta = await head(BLOB_PATHNAME)
-  if (!meta?.url) return null
+  const result = await get(BLOB_PATHNAME, { access: blobAccess(), useCache: false })
+  if (!result?.stream) return null
 
-  const cacheBust = meta.uploadedAt
-    ? new Date(meta.uploadedAt).getTime()
-    : Date.now()
-  const res = await fetch(`${meta.url}?v=${cacheBust}`, { cache: "no-store" })
-  if (!res.ok) return null
-  return res.json()
+  const text = await new Response(result.stream).text()
+  return JSON.parse(text)
 }
 
 async function writeToBlob(body: unknown) {
   const json = JSON.stringify(body)
   await put(BLOB_PATHNAME, json, {
-    access: "public",
+    access: blobAccess(),
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
