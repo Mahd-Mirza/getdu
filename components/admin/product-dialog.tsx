@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import type { CMSCategory, CMSProduct } from "@/lib/cms/types"
 import { parseFeatures, productFormSchema, type ProductFormValues } from "@/lib/cms/schemas"
+import { notifyPersistFailure, persistCmsToServer } from "@/lib/cms/persist-server"
 import { useCMSStore } from "@/stores/cms-store"
 import { Button } from "@/components/ui/button"
 import {
@@ -99,7 +100,7 @@ export function ProductDialog({
     }
   }, [open, product, categories, form])
 
-  function onSubmit(values: ProductFormValues) {
+  async function onSubmit(values: ProductFormValues) {
     const originalRaw = values.originalPrice?.trim()
     const originalPrice =
       originalRaw && originalRaw.length > 0 ? Number(originalRaw) : null
@@ -128,6 +129,13 @@ export function ProductDialog({
       hidePrice: values.hidePrice,
       whatsappRedirect: values.whatsappRedirect,
     })
+
+    const saved = await persistCmsToServer()
+    if (!saved.ok) {
+      notifyPersistFailure(saved.error)
+      toast.error("Saved locally only — not visible on other devices yet")
+      return
+    }
 
     toast.success(product ? "Product updated" : "Product created")
     onOpenChange(false)

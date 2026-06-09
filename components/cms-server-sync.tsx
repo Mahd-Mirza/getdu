@@ -1,35 +1,13 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { useCMSStore, cmsStateToPersist, CMS_STORAGE_KEY } from "@/stores/cms-store"
+import { useCMSStore, cmsStateToPersist } from "@/stores/cms-store"
 import type { CMSStore } from "@/stores/cms-store"
-
-function hadPersistedClientSnapshot(): boolean {
-  if (typeof window === "undefined") return false
-  try {
-    return window.localStorage.getItem(CMS_STORAGE_KEY) != null
-  } catch {
-    return false
-  }
-}
-
-function newestIsoMs(slice: ReturnType<typeof cmsStateToPersist>): number {
-  let t = 0
-  for (const p of slice.products) {
-    const x = Date.parse(p.updatedAt)
-    if (Number.isFinite(x) && x > t) t = x
-  }
-  for (const r of slice.recentUpdates) {
-    const x = Date.parse(r.at)
-    if (Number.isFinite(x) && x > t) t = x
-  }
-  return t
-}
+import { notifyPersistFailure, persistCmsToServer } from "@/lib/cms/persist-server"
 
 /**
  * Loads CMS from the server after localStorage hydration, and saves edits back.
- * Without this, dashboard changes only exist in the admin browser's localStorage,
- * so the public site keeps showing seed prices for most visitors.
+ * Server data is the source of truth for all visitors — localStorage is only a cache.
  */
 export function CmsServerSync() {
   const hydrated = useCMSStore((s) => s._hasHydrated)
@@ -53,19 +31,11 @@ export function CmsServerSync() {
 
         const serverSlice = data as ReturnType<typeof cmsStateToPersist>
 
-        const clientSlice = cmsStateToPersist(useCMSStore.getState())
-        const hadLocal = hadPersistedClientSnapshot()
-
-        if (
-          !hadLocal ||
-          newestIsoMs(serverSlice) >= newestIsoMs(clientSlice)
-        ) {
-          applyingRemote.current = true
-          useCMSStore.setState(serverSlice as Partial<CMSStore>)
-          queueMicrotask(() => {
-            applyingRemote.current = false
-          })
-        }
+        applyingRemote.current = true
+        useCMSStore.setState(serverSlice as Partial<CMSStore>)
+        queueMicrotask(() => {
+          applyingRemote.current = false
+        })
       } catch {
         /* offline or invalid JSON */
       } finally {
@@ -80,7 +50,8 @@ export function CmsServerSync() {
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>
 
-    const unsub = useCMSStore.subscribe((state) => {
+    const unsub = useCMSStore.subscribe(() => {
+      const state = useCMSStore.getState()
       if (
         !state._hasHydrated ||
         !serverPullDone.current ||
@@ -91,12 +62,9 @@ export function CmsServerSync() {
 
       clearTimeout(timeout)
       timeout = setTimeout(() => {
-        const payload = cmsStateToPersist(useCMSStore.getState())
-        fetch("/api/cms", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }).catch(() => {})
+        persistCmsToServer().then((result) => {
+          if (!result.ok) notifyPersistFailure(result.error)
+        })
       }, 450)
     })
 

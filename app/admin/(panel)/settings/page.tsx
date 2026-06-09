@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { CmsStorageBanner } from "@/components/admin/cms-storage-banner"
 import { useCMSStore } from "@/stores/cms-store"
 import { usePersistHydrated } from "@/hooks/use-store-hydrated"
 import { Spinner } from "@/components/ui/spinner"
@@ -68,6 +69,8 @@ export default function AdminSettingsPage() {
           Global knobs that affect both the admin overview and live storefront widgets.
         </p>
       </div>
+
+      <CmsStorageBanner />
 
       <Card className="border-border bg-card/70 p-6 backdrop-blur-xl">
         <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
