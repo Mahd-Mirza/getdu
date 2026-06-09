@@ -21,7 +21,8 @@ export function hasPersistentStorage() {
 }
 
 function useBlobStorage() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN)
+  // Legacy static token, or OIDC (BLOB_STORE_ID + auto-injected VERCEL_OIDC_TOKEN on Vercel).
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID)
 }
 
 function useKvStorage() {
@@ -109,6 +110,17 @@ export async function readCmsPayload(): Promise<unknown | null> {
     try {
       const fromBlob = await readFromBlob()
       if (fromBlob) return fromBlob
+
+      // First deploy after connecting Blob: seed from bundled data/cms.json once.
+      const fromFile = await readFromFile()
+      if (fromFile && process.env.VERCEL) {
+        try {
+          await writeToBlob(fromFile)
+        } catch {
+          /* non-fatal — still return file snapshot */
+        }
+        return fromFile
+      }
     } catch {
       /* fall through */
     }

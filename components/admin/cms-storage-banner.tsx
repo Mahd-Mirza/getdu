@@ -8,7 +8,10 @@ import { Card } from "@/components/ui/card"
 
 type StorageStatus = "checking" | "blob" | "kv" | "file" | "none" | "error"
 
-const VERCEL_STORAGE_URL = "https://vercel.com/dashboard/stores"
+const VERCEL_STORAGE_URL =
+  "https://vercel.com/mahdmirza400-2985s-projects/getdu/stores"
+const VERCEL_DEPLOYMENTS_URL =
+  "https://vercel.com/mahdmirza400-2985s-projects/getdu/deployments"
 
 export function CmsStorageBanner() {
   const [status, setStatus] = useState<StorageStatus>("checking")
@@ -106,16 +109,39 @@ export function CmsStorageBanner() {
               <strong className="text-foreground">getdu</strong> project.
             </li>
             <li>
-              Redeploy the site, return here, edit a product, and save. This page should turn
-              green.
+              Open{" "}
+              <Link
+                href={VERCEL_DEPLOYMENTS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                Deployments
+              </Link>
+              , redeploy the latest build (uncheck build cache if offered), refresh this page, then
+              save a product once. The banner should turn green.
             </li>
           </ol>
-          <Button asChild size="sm" variant="outline" className="gap-2">
-            <Link href={VERCEL_STORAGE_URL} target="_blank" rel="noopener noreferrer">
-              Open Vercel Storage
-              <ExternalLink className="size-3.5" />
-            </Link>
-          </Button>
+          <p className="text-xs">
+            Vercel injects <strong className="text-foreground">BLOB_STORE_ID</strong> (OIDC) or{" "}
+            <strong className="text-foreground">BLOB_READ_WRITE_TOKEN</strong> only after you connect
+            storage and redeploy. Your bundled <strong className="text-foreground">cms.json</strong>{" "}
+            is copied into Blob automatically on the first load after that.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm" variant="default" className="gap-2">
+              <Link href={VERCEL_STORAGE_URL} target="_blank" rel="noopener noreferrer">
+                Open Vercel Storage
+                <ExternalLink className="size-3.5" />
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-2">
+              <Link href={VERCEL_DEPLOYMENTS_URL} target="_blank" rel="noopener noreferrer">
+                Redeploy
+                <ExternalLink className="size-3.5" />
+              </Link>
+            </Button>
+          </div>
         </div>
       ) : null}
     </Card>
