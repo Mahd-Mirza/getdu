@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Check, Star, Zap } from "lucide-react"
 import Link from "next/link"
 import { useCMSStore, whatsappHref } from "@/stores/cms-store"
+import { formatAedAmount } from "@/lib/utils"
 import { usePersistHydrated } from "@/hooks/use-store-hydrated"
 
 export function FeaturedProducts() {
@@ -121,7 +122,7 @@ export function FeaturedProducts() {
                               </span>
                               {plan.originalPrice > plan.price ? (
                                 <span className="rounded-full bg-[#00C2FF]/20 px-1.5 py-0.5 text-[9px] font-medium text-[#00C2FF] sm:px-2 sm:text-xs">
-                                  Save AED {plan.originalPrice - plan.price}
+                                  Save AED {formatAedAmount(plan.originalPrice - plan.price)}
                                 </span>
                               ) : null}
                             </div>

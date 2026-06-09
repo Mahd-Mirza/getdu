@@ -7,6 +7,7 @@ import { Check, Tv, Wifi, Zap, Star } from "lucide-react"
 import type { PlanType } from "@/lib/cms/types"
 import { getProductIcon } from "@/lib/cms/icons"
 import { useCMSStore, whatsappHref } from "@/stores/cms-store"
+import { formatAedAmount } from "@/lib/utils"
 
 export type NavigateToPlanDetail = { id: string; planType: PlanType }
 export const NAVIGATE_TO_PLAN_EVENT = "navigate-to-plan"
@@ -216,7 +217,7 @@ export function Plans() {
                               </span>
                               {plan.originalPrice > plan.price && (
                                 <span className="rounded-full bg-[#00C2FF]/20 px-1.5 py-0.5 text-[9px] font-medium text-[#00C2FF] sm:px-2 sm:text-xs">
-                                  Save AED {plan.originalPrice - plan.price}
+                                  Save AED {formatAedAmount(plan.originalPrice - plan.price)}
                                 </span>
                               )}
                             </div>
