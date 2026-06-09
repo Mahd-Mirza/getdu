@@ -21,9 +21,14 @@ export const metadata: Metadata = {
     'Personalized du home packages at your doorstep. Call +971 56 365 6816 · mirzaw525@gmail.com — fiber, 5G, TV & landline offers (T&C apply).',
   generator: 'v0.app',
   icons: {
-    icon: [{ url: '/logo.png', type: 'image/png' }],
-    shortcut: '/logo.png',
-    apple: '/logo.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-48.png', type: 'image/png', sizes: '48x48' },
+      { url: '/favicon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
   },
   openGraph: {
     title: 'GetDu.ae — du Authorized Partner | Home Internet UAE',
