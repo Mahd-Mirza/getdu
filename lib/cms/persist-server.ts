@@ -1,7 +1,7 @@
 import { cmsStateToPersist, useCMSStore } from "@/stores/cms-store"
 
 export type PersistCmsResult =
-  | { ok: true; storage: "blob" | "file" }
+  | { ok: true; storage: "blob" | "kv" | "file" | "none" }
   | { ok: false; error: string; storage?: string }
 
 /** Push the current Zustand CMS slice to `/api/cms` (shared by admin + background sync). */
@@ -26,9 +26,13 @@ export async function persistCmsToServer(): Promise<PersistCmsResult> {
     }
   }
 
+  const mode = storage ?? "file"
   return {
     ok: true,
-    storage: storage === "blob" || storage === "file" ? storage : "file",
+    storage:
+      mode === "blob" || mode === "kv" || mode === "file" || mode === "none"
+        ? mode
+        : "file",
   }
 }
 
